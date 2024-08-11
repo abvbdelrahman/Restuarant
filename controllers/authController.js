@@ -1,7 +1,8 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const CatchAsync = require('../utils/CatchAsync');
+const { log } = require('console');
 
 const signToken = id => {
     return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
@@ -64,10 +65,12 @@ exports.login = CatchAsync(async (req, res, next) => {
     if (!email || !password) return res.status(400).json({ message: 'Please provide email and password' });
 
     const user = await User.findOne({ email }).select('+password');
+    console.log(password, user.password);
     if (!user || !(await bcrypt.compare(password, user.password))) return res.status(401).json({ message: 'Invalid email or password' });
 
     createToken(user, 200, req, res);
 });
+
 
 exports.logout = (req, res) => {
     res.cookie('jwt', 'loggedout', {

@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const compression = require('compression');
@@ -6,12 +7,14 @@ const rateLimit = require('express-rate-limit');
 const morgan = require('morgan');
 const path = require('path');
 const userRouter = require('./routes/userRouter');
-const productRouter = require('./routes/ProductRouter');
+const foodRouter = require('./routes/foodRouter');
 const orderRouter = require('./routes/orderRouter');
-const menuRouter = require('./routes/menuRouter');
+const restaurantRouter = require('./routes/restaurantRouter');
+const categoryRouter = require('./routes/categoryRouter');
 
 const app = express();
 
+app.use(cors());
 // Set security headers
 app.use(helmet());
 
@@ -22,7 +25,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Request logging
-app.use(morgan('combined'));
+app.use(morgan('dev'));
 
 // Gzip compression
 app.use(compression());
@@ -41,9 +44,10 @@ app.use(express.static(path.join(__dirname, 'public'), {
 
 // Routes
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/restaurants', restaurantRouter);
 app.use('/api/v1/orders', orderRouter);
-app.use('/api/v1/products', productRouter);
-app.use('/api/v1/menuItems', menuRouter);
+app.use('/api/v1/foods', foodRouter);
+app.use('/api/v1/category', categoryRouter);
 // 404 handler
 app.all('*', (req, res, next) => {
   const error = new Error(`Cannot find ${req.originalUrl} on this server`);

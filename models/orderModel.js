@@ -3,14 +3,14 @@ const mongoose = require('mongoose');
 const orderSchema = new mongoose.Schema({
     customer: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Customer',
+        ref: 'User',
         required: true
     },
-    items: [
+    foods: [
         {
             item: {
                 type: mongoose.Schema.Types.ObjectId,
-                ref: 'Product',
+                ref: 'Food',
                 required: true
             },
             quantity: {
@@ -32,8 +32,8 @@ const orderSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['Pending', 'Completed', 'Cancelled'],
-        default: 'Pending'
+        enum: ['Preparing', 'Prepare', 'On the way','deliverd'],
+        default: 'Preparing'
     },
     deliveryAddress: {
         type: mongoose.Schema.Types.ObjectId,
@@ -51,12 +51,12 @@ const orderSchema = new mongoose.Schema({
     deliveryDate: Date,
     deliveryTime: String,
     deliveryNote: String
-});
+},{timestamps: true});
 
 // Pre-save hook to calculate total price
 orderSchema.pre('save', function(next) {
-    if (this.isModified('items')) {
-        this.total = this.items.reduce((acc, item) => acc + (item.quantity * item.price), 0);
+    if (this.isModified('foods')) {
+        this.total = this.foods.reduce((acc, item) => acc + (item.quantity * item.price), 0);
     }
     next();
 });

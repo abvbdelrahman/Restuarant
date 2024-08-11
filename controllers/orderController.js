@@ -2,7 +2,7 @@ const Order = require('../models/orderModel');
 const CatchAsync = require('../utils/CatchAsync');
 
 exports.getAllOrders = CatchAsync(async (req, res, next) => {
-    const orders = await Order.find({}).populate('user', 'name email');
+    const orders = await Order.find({}).populate('customer', 'name email');
     res.status(200).json({
         status: 'success',
         results: orders.length,
